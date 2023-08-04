@@ -1,4 +1,4 @@
-String handle_respont(String text, bool err = false){
+String handle_respont(String text, short speed, bool err = false){
     String send_html = "<!DOCTYPE html>";
     send_html += "<html lang='en'>";
     send_html += "<head>";
@@ -17,6 +17,7 @@ String handle_respont(String text, bool err = false){
                             send_html += "<h5 class='card-title'>Pengiriman Berhasil!</h5>";
                             send_html += "<p class='card-text'>Anda mengirim:</p>";
                             send_html += "<p class='card-text'>\"" + text + "\"</p>";
+                            send_html += "<p class='card-text'> Kecepatan Text: " + String(speed) + "</p>";
                             send_html += "<a href='/' class='btn btn-success'>Kembali</a>";
                         } else{
                             send_html += "<h5 class='card-title'>Pengiriman Gagal!</h5>";
@@ -33,15 +34,34 @@ String handle_respont(String text, bool err = false){
     return send_html;
 }
 
+void bad_request_respont(){
+    textFromClient = "Error Code: 400";
+    server.send(200, "text/html", handle_respont(textFromClient, speedFromClient, true));
+}
+
 void handle_send(){
-    if (server.hasArg("textYgDikirim")) {
-        textFromClient = server.arg("textYgDikirim"); // Mengambil value pada input yang memiliki property name="textYgDikirim"
-        Serial.print("Received Text: ");
-        Serial.println(textFromClient);
-        server.send(200, "text/html", handle_respont(textFromClient));
+    String mySpeed;
+    char *endPtr;
+
+    if ( server.hasArg("textYgDikirim") && server.hasArg("speedYgDikirim") ) {
+        textFromClient = server.arg("textYgDikirim");           // Mengambil value string pada input yang memiliki property name="textYgDikirim"
+        mySpeed = server.arg("speedYgDikirim");          // Mengambil value string pada input yang memiliki property name="speedYgDikirim"
+        speedFromClient = strtol(mySpeed.c_str(), &endPtr, 10); //Konfersi string ke short
+
+        if( speedFromClient > 0 && speedFromClient < 5 ){       // Mengecek jika nilainya antara 1 - 4
+            Serial.print("Received Text: ");
+            Serial.println(textFromClient);
+            Serial.print("Speed: ");
+            Serial.println(String(speedFromClient));
+
+            server.send(200, "text/html", handle_respont(textFromClient, speedFromClient));
+        } else{     // Jikai diluar 1 - 4
+            bad_request_respont();
+            textFromClient = "";
+            speedFromClient = 0;
+        }
     }
     else {
-        textFromClient = "Error Code: 400";
-        server.send(200, "text/html", handle_respont(textFromClient, true));
+        bad_request_respont();
     }
 }

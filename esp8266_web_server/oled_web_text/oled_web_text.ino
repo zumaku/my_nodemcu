@@ -15,8 +15,9 @@ ESP8266WebServer server(80);
 
 // Variables
 unsigned long prevMillis = 0;
-int xPos = SCREEN_WIDTH;
+short xPos = SCREEN_WIDTH;
 String textFromClient = "";
+short speedFromClient = 0;
 
 // Functions
 void server_setup();

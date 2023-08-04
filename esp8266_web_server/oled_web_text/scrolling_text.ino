@@ -14,7 +14,17 @@ void start_scrolling(const char *text, int scrollSpeed) {
 }
 
 void display_text(){
-    if(textFromClient == ""){   // Jika belum ada pesan dari server
+    if(textFromClient != "" && speedFromClient != 0){   // Jika ada pesan dari server dan kecepatannya
+        u8g2.setFont(u8g2_font_ncenB12_tr); // Pilih font dan ukuran
+        u8g2.firstPage();
+        do {
+            unsigned long currentMillis = millis();
+            if (currentMillis - prevMillis >= 50) { // Ubah nilai delay di sini
+                prevMillis = currentMillis;
+                start_scrolling(textFromClient.c_str(), speedFromClient);
+            }
+        } while ( u8g2.nextPage() );
+    } else{     // Tapi jika tidak ada
         do {
             String localIP = "http://";
             localIP += WiFi.localIP().toString();
@@ -25,16 +35,6 @@ void display_text(){
             u8g2.drawStr(5, 30, "Server run!");
             u8g2.setFont(u8g2_font_ncenB08_tr); // Ganti ukuran font
             u8g2.drawStr(7, 45, localIPChar);
-        } while ( u8g2.nextPage() );
-    } else{     // Tapi jika sudah ada
-        u8g2.setFont(u8g2_font_ncenB12_tr); // Pilih font dan ukuran
-        u8g2.firstPage();
-        do {
-            unsigned long currentMillis = millis();
-            if (currentMillis - prevMillis >= 50) { // Ubah nilai delay di sini
-                prevMillis = currentMillis;
-                start_scrolling(textFromClient.c_str(), 2);
-            }
         } while ( u8g2.nextPage() );
     }
     

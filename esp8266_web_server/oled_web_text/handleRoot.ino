@@ -17,6 +17,12 @@ void handle_root() {
                     root_html += "<form action='/send' method='POST' class='form-floating'>";
                         root_html += "<textarea class='form-control mb-3' placeholder='Leave a comment here' id='floatingTextarea2' style='height: 150px' name='textYgDikirim'></textarea>";
                         root_html += "<label for='floatingTextarea2'>Masukkan teks disini</label>";
+                        root_html += "<select class='form-select mb-5 pt-2' name='speedYgDikirim'>";
+                            root_html += "<option value='1' selected>Kecepatan: 1</option>";
+                            root_html += "<option value='2'>Kecepatan: 2</option>";
+                            root_html += "<option value='3'>Kecepatan: 3</option>";
+                            root_html += "<option value='4'>Kecepatan: 4</option>";
+                        root_html += "</select>";
                         root_html += "<button type='submit' class='btn btn-primary'>Kirim</button>";
                     root_html += "</form>";
                 root_html += "</div>";
