@@ -12,7 +12,7 @@ void server_setup(){
   Serial.println(WiFi.localIP());
 
   // Routing
-  server.on("/", HTTP_GET, handleRoot);
-  server.on("/send", HTTP_POST, handleSend);
+  server.on("/", HTTP_GET, handle_root);
+  server.on("/send", HTTP_POST, handle_send);
   server.begin();
 }

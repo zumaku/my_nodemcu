@@ -14,14 +14,14 @@ String handle_respont(String text, bool err = false){
                     send_html += "<div class='card-header'>Status</div>";
                     send_html += "<div class='card-body'>";
                         if(!err){
-                          send_html += "<h5 class='card-title'>Pengiriman Berhasil!</h5>";
-                          send_html += "<p class='card-text'>Anda mengirim:</p>";
-                          send_html += "<p class='card-text'>\"" + text + "\"</p>";
-                          send_html += "<a href='/' class='btn btn-success'>Kembali</a>";
+                            send_html += "<h5 class='card-title'>Pengiriman Berhasil!</h5>";
+                            send_html += "<p class='card-text'>Anda mengirim:</p>";
+                            send_html += "<p class='card-text'>\"" + text + "\"</p>";
+                            send_html += "<a href='/' class='btn btn-success'>Kembali</a>";
                         } else{
-                          send_html += "<h5 class='card-title'>Pengiriman Gagal!</h5>";
-                          send_html += "<h4>" + text + "</h4>";
-                          send_html += "<a href='/' class='btn btn-danger'>Kembali</a>";
+                            send_html += "<h5 class='card-title'>Pengiriman Gagal!</h5>";
+                            send_html += "<h4>" + text + "</h4>";
+                            send_html += "<a href='/' class='btn btn-danger'>Kembali</a>";
                         }
                     send_html += "</div>";
                 send_html += "</div>";
@@ -33,17 +33,15 @@ String handle_respont(String text, bool err = false){
     return send_html;
 }
 
-String text;
-
-void handleSend(){
+void handle_send(){
     if (server.hasArg("textYgDikirim")) {
-        text = server.arg("textYgDikirim");
+        textFromClient = server.arg("textYgDikirim"); // Mengambil value pada input yang memiliki property name="textYgDikirim"
         Serial.print("Received Text: ");
-        Serial.println(text);
-        server.send(200, "text/html", handle_respont(text));
+        Serial.println(textFromClient);
+        server.send(200, "text/html", handle_respont(textFromClient));
     }
     else {
-        text = "Error Code: 400";
-        server.send(200, "text/html", handle_respont(text, true));
+        textFromClient = "Error Code: 400";
+        server.send(200, "text/html", handle_respont(textFromClient, true));
     }
 }

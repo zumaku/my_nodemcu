@@ -1,0 +1,80 @@
+#include <ESP8266WiFi.h>
+#include <ESP8266WebServer.h>
+#include <Wire.h>
+#include <U8g2lib.h>
+
+#define SCREEN_WIDTH 128
+#define SCREEN_HEIGHT 64
+
+U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE);
+
+ESP8266WebServer server(80);
+
+unsigned long prevMillis = 0;
+int xPos = SCREEN_WIDTH;
+String scrollingText = "";
+
+void setup() {
+  Wire.begin();  // Inisialisasi koneksi I2C
+  u8g2.begin();
+  Serial.begin(115200);
+
+  // Hubungkan ke WiFi
+  WiFi.begin("Pakdiyaa2", "belikodata"); // Ganti dengan informasi WiFi Anda
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(1000);
+    Serial.println("Connecting to WiFi...");
+  }
+  Serial.println("Connected to WiFi");
+
+  // Atur penanganan URL
+  server.on("/", HTTP_GET, handleRoot);
+  server.on("/send", HTTP_POST, handleSend);
+  server.begin();
+}
+
+void loop() {
+  server.handleClient();
+
+  u8g2.setFont(u8g2_font_ncenB08_tr); // Pilih font dan ukuran
+  u8g2.firstPage();
+  do {
+    unsigned long currentMillis = millis();
+    if (currentMillis - prevMillis >= 50) { // Ubah nilai delay di sini
+      prevMillis = currentMillis;
+      drawScrollingText(scrollingText.c_str(), 1);
+    }
+  } while ( u8g2.nextPage() );
+}
+
+void handleRoot() {
+  String html = "<form method='POST' action='/send'>";
+  html += "<input type='text' name='message'>";
+  html += "<input type='submit' value='Send'>";
+  html += "</form>";
+  server.send(200, "text/html", html);
+}
+
+void handleSend() {
+  if (server.method() == HTTP_POST) {
+    scrollingText = server.arg("message");
+    server.send(200, "text/plain", "Message received");
+  } else {
+    server.send(405, "text/plain", "Method Not Allowed");
+  }
+}
+
+void drawScrollingText(const char *text, int scrollSpeed) {
+  int textWidth = u8g2.getStrWidth(text); // Hitung lebar teks
+
+  if (xPos <= -textWidth) {
+    xPos = SCREEN_WIDTH;
+  }
+
+  u8g2.clearBuffer();
+  u8g2.setCursor(xPos, SCREEN_HEIGHT / 2); // Atur posisi teks di tengah layar
+  u8g2.print(text);
+  u8g2.sendBuffer();
+
+  xPos -= scrollSpeed;
+}

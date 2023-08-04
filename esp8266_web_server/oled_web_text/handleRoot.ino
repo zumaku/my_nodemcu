@@ -1,10 +1,5 @@
-void handleRoot() {
-//   String message = "Welcome to ESP8266 Web Server<br>";
-//   message += "<form action='/send' method='POST'>";
-//   message += "Text: <input type='text' style='background-color: red;' name='textYgDikirim'><input type='submit' value='Send'>";
-//   message += "</form>";
-
-  String root_html = "<!DOCTYPE html>";
+void handle_root() {
+    String root_html = "<!DOCTYPE html>";
     root_html += "<html lang='en'>";
     root_html += "<head>";
         root_html += "<meta charset='UTF-8'>";
@@ -31,5 +26,5 @@ void handleRoot() {
     root_html += "</body>";
     root_html += "</html>";
 
-  server.send(200, "text/html", root_html);
+    server.send(200, "text/html", root_html);
 }
